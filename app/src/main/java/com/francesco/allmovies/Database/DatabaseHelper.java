@@ -120,7 +120,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return false;
+    }
 
+    public ArrayList<Movie> searchMovies(String movie_searched) {
+        Log.d(TAG, "searchMovies: entered query");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList <Movie> listMovies = new ArrayList<Movie>();
+        //                                 0           1              2                    3
+       // String selectQuery = "SELECT  MOVIE_TITLE,  MOVIE_YEAR, MOVIE_DESCRIPTION, MOVIE_POSTER FROM MOVIES";
+
+
+        Cursor cursor = db.query(TABLE_MOVIES, new String[] {"MOVIE_TITLE", "MOVIE_YEAR", "MOVIE_DESCRIPTION", "MOVIE_POSTER" },
+                "MOVIE_TITLE" + " LIKE ?", new String[] {"%" + movie_searched + "%"},
+                null, null, null);
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                Movie movie = new Movie(cursor.getString(3), cursor.getString(2), cursor.getString(1), cursor.getString(0));
+                listMovies.add(movie);
+                Log.d(TAG, "getMovies: movie: "+movie);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return listMovies;
 
     }
 

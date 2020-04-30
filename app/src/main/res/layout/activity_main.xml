@@ -30,7 +30,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editText_description"
+                android:id="@+id/editText_search_movie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -52,7 +52,20 @@
                     android:layout_height="40dp"
                     android:background="@drawable/button_white_background"
                     android:padding="3dp"
+                    android:src="@drawable/ic_microphone"
+                    android:visibility="visible"/>
+
+                <ImageButton
+                    android:id="@+id/button_check"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_white_background"
+                    android:padding="3dp"
+                    android:visibility="gone"
                     android:src="@drawable/ic_check" />
+
+
+
             </LinearLayout>
 
 

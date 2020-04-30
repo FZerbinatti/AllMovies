@@ -1,5 +1,6 @@
 package com.francesco.allmovies.Activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -15,10 +16,14 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.francesco.allmovies.API.Client;
@@ -33,6 +38,7 @@ import com.francesco.allmovies.Adapter.RecyclerViewClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,20 +48,56 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
     private List<Movie> movieList;
+    private static final int REQUEST_CODE_SPEACH_INPUT = 1000;
     ProgressDialog pd;
     DatabaseHelper mDatabaseHelper;
+    ImageButton button_microphone, button_check;
     public static final String TAG ="MainActivity: ";
+    EditText editText_search_movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
-
+        button_microphone = (ImageButton) findViewById(R.id.button_microphone);
+        button_check = (ImageButton) findViewById(R.id.button_check);
+        editText_search_movie = (EditText) findViewById(R.id.editText_search_movie);
 
         hideSoftKeyboard();
-
         initViews();
+
+        button_microphone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Voice2Text();
+            }
+        });
+
+        editText_search_movie.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                button_microphone.setVisibility(View.GONE);
+                button_check.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
+
+        button_check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideSoftKeyboard();
+                // cerca tra i tutoli qualcosa che contiene la parola in edittext e fetcha il movie in una lista
+                ArrayList<Movie> searchedMovieList =  new ArrayList<>();
+                searchedMovieList = mDatabaseHelper.searchMovies(editText_search_movie.getText().toString());
+
+
+                recyclerView.setAdapter(new RecyclerViewAdapter(getApplicationContext(), searchedMovieList));
+                recyclerView.smoothScrollToPosition(0);
+
+            }
+        });
     }
 
     // implementa SQLITE per salvare i dati dei film fetchati
@@ -189,6 +231,48 @@ public class MainActivity extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void Voice2Text (){
+
+        Intent intent_voice = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent_voice.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent_voice.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent_voice.putExtra(RecognizerIntent.EXTRA_PROMPT, "Movie title?");
+
+
+        try {
+            startActivityForResult(intent_voice, REQUEST_CODE_SPEACH_INPUT);
+        }catch (Exception e){
+            Log.d(TAG, "onClick: "+ e.getMessage());
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case REQUEST_CODE_SPEACH_INPUT:{
+                if (resultCode == RESULT_OK && data != null ) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String description = editText_search_movie.getText().toString();
+
+                    if (description.equals("") || description.equals(" ") || description.isEmpty() ){
+                        editText_search_movie.setText(result.get(0));
+                    }else{
+                        editText_search_movie.setText(result.get(0));
+                    }
+
+
+
+                }
+            }
+        }
+
+        button_check.setVisibility(View.VISIBLE);
+        button_microphone.setVisibility(View.GONE);
     }
 
 
