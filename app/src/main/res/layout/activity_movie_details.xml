@@ -10,25 +10,29 @@
     android:backgroundTint="@color/white">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/movie_poster"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="center"
         android:background="@color/white"/>
 
+
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/movie_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/button_white_background"
         android:gravity="center"
         android:text="Movie Title"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/movie_poster" />
 
     <TextView
         android:layout_width="match_parent"
@@ -40,9 +44,24 @@
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.65"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/movie_title" />
+
+
+    <TextView
+        android:id="@+id/movie_year"
+        android:layout_width="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_height="0dp"
+        android:background="@drawable/button_white_background"
+        android:gravity="center"
+        android:text="2000"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

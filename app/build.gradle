@@ -21,7 +21,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'OMBD_API_TOKEN', MyOMDbApiKey
+        it.buildConfigField 'String', 'MyTheMovieDBApiToken', MyTheMovieDBApiToken
     }
 
 }
@@ -48,4 +48,6 @@ dependencies {
     //GSON
     implementation 'com.squareup.retrofit2:retrofit:2.6.3'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    implementation 'androidx.palette:palette:1.0.0'
 }

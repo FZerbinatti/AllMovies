@@ -1,7 +1,11 @@
 package com.francesco.allmovies.API;
 
+import android.util.Log;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.francesco.allmovies.Activity.MainActivity.TAG;
 
 public class Client {
 
@@ -17,6 +21,7 @@ public class Client {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
+        Log.d(TAG, "getClient: " + retrofit.toString());
         return retrofit;
     }
 
