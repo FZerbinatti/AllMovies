@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -51,10 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEACH_INPUT = 1000;
     ProgressDialog pd;
     DatabaseHelper mDatabaseHelper;
-    ImageButton button_microphone, button_check;
+    ImageButton button_microphone, button_check, button_loadFavs;
     public static final String TAG ="MainActivity: ";
     EditText editText_search_movie;
+    Boolean movieFav;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +66,15 @@ public class MainActivity extends AppCompatActivity {
         button_microphone = (ImageButton) findViewById(R.id.button_microphone);
         button_check = (ImageButton) findViewById(R.id.button_check);
         editText_search_movie = (EditText) findViewById(R.id.editText_search_movie);
+        recyclerView = findViewById(R.id.main_recyclerview);
+        button_loadFavs = findViewById(R.id.button_loadFavs);
+        button_loadFavs.setBackgroundResource(R.drawable.ic_favorite_red);
 
+        movieFav = false;
         hideSoftKeyboard();
+        loadJSON();
         initViews();
+        orientation();
 
         button_microphone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 Voice2Text();
             }
         });
+
 
         editText_search_movie.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -98,17 +108,47 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        button_loadFavs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!movieFav){
+                    button_loadFavs.setBackgroundResource(R.drawable.ic_favorite);
+                    movieFav=true;
+                    Toast.makeText(MainActivity.this, "Show favourites", Toast.LENGTH_SHORT).show();
+                    ArrayList<Movie> offlineMovies = mDatabaseHelper.getFavouriteMovies();
+                    recyclerView.setAdapter(new RecyclerViewAdapter(getApplicationContext(), offlineMovies));
+                    recyclerView.smoothScrollToPosition(0);
+
+
+                }else {
+                    button_loadFavs.setBackgroundResource(R.drawable.ic_favorite_red);
+                    movieFav=false;
+                    Toast.makeText(MainActivity.this, "Show main page", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+
+            }
+        });
     }
 
     // implementa SQLITE per salvare i dati dei film fetchati
     // implementa la ricerca sui film nel database locale
 
+    //landscape
+    // infinite scrolling
+    // non fare set adapter/new adapter in posti differenti dall'on create
+
+
 
 
     private void initViews(){
 
-        recyclerView = findViewById(R.id.main_recyclerview);
+
         movieList = new ArrayList<>();
+
 
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
@@ -129,23 +169,30 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
-        adapter = new RecyclerViewAdapter(this, movieList);
 
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        }else {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        }
+       adapter = new RecyclerViewAdapter(this, movieList);
+       recyclerView.setItemAnimator(new DefaultItemAnimator());
+       recyclerView.setAdapter(adapter);
+       adapter.notifyDataSetChanged();
 
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
-        loadJSON();
     }
 
     private void hideSoftKeyboard() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+    }
+
+    private void orientation (){
+        Log.d(TAG, "orientation: checking orientation");
+        if (getApplicationContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            Log.d(TAG, "orientation: PORTRAIT");
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }else if (getApplicationContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            Log.d(TAG, "orientation: LANDSCAPE");
+ //           recyclerView = new RecyclerView(MainActivity.this);
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }
 
     }
 

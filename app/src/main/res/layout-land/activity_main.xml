@@ -10,34 +10,35 @@
 
     <LinearLayout
 
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/button_grey_background"
-        android:paddingTop="10dp"
+        android:orientation="vertical"
         android:paddingHorizontal="10dp"
+        android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_white_background"
-            android:orientation="horizontal"
             android:layout_marginBottom="20dp"
-            >
+            android:background="@drawable/button_white_background"
+            android:orientation="horizontal">
 
             <EditText
+                android:id="@+id/editText_search_movie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/editText_description"
-                android:paddingEnd="10dp"
-                android:windowSoftInputMode="stateAlwaysHidden"
-                android:textSize="15sp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="20dp"
-                android:hint="search for a movie" />
-
+                android:hint="search for a movie"
+                android:paddingEnd="10dp"
+                android:textSize="15sp"
+                android:windowSoftInputMode="stateAlwaysHidden" />
 
 
             <LinearLayout
@@ -46,32 +47,51 @@
                 android:gravity="end">
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/button_microphone"
-                    android:src="@drawable/ic_microphone"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/button_white_background"
                     android:padding="3dp"
-                    />
+                    android:src="@drawable/ic_microphone"
+                    android:visibility="visible"/>
+
+                <ImageButton
+                    android:id="@+id/button_check"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_white_background"
+                    android:padding="3dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_check" />
+
+
+
             </LinearLayout>
-
-
 
 
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/gallery_recyclerview"
-            android:scrollbars="vertical"
+            android:id="@+id/main_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:scrollbars="vertical">
 
         </androidx.recyclerview.widget.RecyclerView>
 
 
     </LinearLayout>
+    <ImageButton
+        android:id="@+id/button_loadFavs"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_opaque_background"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_favorite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

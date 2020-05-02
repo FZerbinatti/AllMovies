@@ -39,8 +39,19 @@ public class Movie implements Parcelable {
     private Boolean video;
     @SerializedName("vote_average")
     private Double voteAverage;
+    private Boolean movie_favourite;
 
-    public Movie(String movie_poster, String movie_plot, String movie_year, String movie_title) {
+    public Movie(String movie_poster, String movie_plot, Boolean movie_favourite, String movie_year, String movie_title) {
+
+        this.movie_poster = movie_poster;
+        this.movie_title = movie_title;
+        this.movie_favourite = movie_favourite;
+        this.movie_plot = movie_plot;
+        this.movie_year = movie_year;
+
+    }
+
+    public Movie(String movie_poster, String movie_plot,  String movie_year, String movie_title) {
 
         this.movie_poster = movie_poster;
         this.movie_title = movie_title;
@@ -48,6 +59,7 @@ public class Movie implements Parcelable {
         this.movie_year = movie_year;
 
     }
+
 
     public Movie(String movie_poster, boolean adult, String movie_plot, String movie_year, List<Integer> genreIds,
                  Integer id, String originalTitle, String originalLanguage, String movie_title, String backdropPath,
@@ -85,6 +97,14 @@ public class Movie implements Parcelable {
             return movie.originalTitle.compareTo(t1.originalTitle);
         }
     };
+
+    public Boolean getMovie_favourite() {
+        return movie_favourite;
+    }
+
+    public void setMovie_favourite(Boolean movie_favourite) {
+        this.movie_favourite = movie_favourite;
+    }
 
     public String getMovie_poster() {
         return movie_poster;

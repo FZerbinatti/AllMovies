@@ -34,6 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "MOVIE_TITLE" + " TEXT ,  "
                 + "MOVIE_YEAR" + " TEXT , "
                 + "MOVIE_DESCRIPTION" + " TEXT , "
+                + "MOVIE_FAVOURITE" + " TEXT , "
                 + "MOVIE_POSTER" + " TEXT   );";
 
         db.execSQL(CREATE_TABLE_MOVIES);
@@ -60,11 +61,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("MOVIE_YEAR", movie.getMovie_year());
         values.put("MOVIE_DESCRIPTION", movie.getMovie_plot());
         values.put("MOVIE_POSTER", movie.getMovie_poster());
+        values.put("MOVIE_FAVOURITE", 0);
 
 
         db.insert(TABLE_MOVIES, null, values);
         db.close();
     }
+
+    public void updateFavourite(Boolean favourite, String movie_name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String bool ="0";
+        ContentValues cv = new ContentValues();
+        if (favourite){
+            bool = "1";
+        }else {
+            bool = "0";
+        }
+        cv.put("MOVIE_FAVOURITE", bool);
+        db.update(TABLE_MOVIES, cv, "MOVIE_TITLE" + "= ?", new String[] {movie_name});
+        db.close();
+        Log.d(TAG, "updateFavourite: now movie parameter for facourite is  "+ bool);
+    }
+
+    public Boolean getFavourite ( String movie_title){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String fav="0";
+        //                                 0
+        String selectQuery = "SELECT  MOVIE_FAVOURITE FROM MOVIES WHERE MOVIE_TITLE = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String []{movie_title});
+        if (cursor.moveToFirst()) {
+            do {
+                fav = cursor.getString(0);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        if (fav.equals("0")){
+            Log.d(TAG, "getFavourite: " + movie_title + " is NOT a fav");
+            return false;
+        }else {
+            Log.d(TAG, "getFavourite: " + movie_title + " is a fav");
+            return true;
+        }
+
+
+    }
+
 
     public void deleteMovie (String movie_title){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -110,7 +152,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT  * FROM MOVIES WHERE ID = ?";
+        String selectQuery = "SELECT * FROM MOVIES WHERE MOVIE_TITLE = ?";
         Cursor cursor = db.rawQuery(selectQuery, new String []{movie_name});
         if (cursor.moveToFirst()) {
             do {
@@ -144,11 +186,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.d(TAG, "getMovies: movie: "+movie);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
         db.close();
         return listMovies;
 
     }
+
+
+    public ArrayList<Movie> getFavouriteMovies() {
+        Log.d(TAG, "getOrdini: entered query");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList <Movie> listMovies = new ArrayList<Movie>();
+        //                                 0           1              2                    3
+        String selectQuery = "SELECT MOVIE_TITLE,  MOVIE_YEAR, MOVIE_DESCRIPTION, MOVIE_POSTER FROM MOVIES WHERE MOVIE_FAVOURITE = ?";
+
+        Cursor cursor = db.rawQuery(selectQuery, new String []{"1"});
+        if (cursor.moveToFirst()) {
+            do {
+                Movie movie = new Movie(cursor.getString(3), cursor.getString(2), cursor.getString(1), cursor.getString(0));
+                listMovies.add(movie);
+                Log.d(TAG, "getMovies: movie: "+movie);
+            } while (cursor.moveToNext());
+        }
+        Log.d(TAG, "getFavouriteMovies: listMovies.size " +listMovies.size());
+        cursor.close();
+        db.close();
+        return listMovies;
+
+    }
+
+
 
 
 
