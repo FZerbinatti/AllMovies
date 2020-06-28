@@ -1,7 +1,9 @@
 package com.francesco.allmovies.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -78,10 +80,30 @@ public class MovieDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (movieFav){
-                    button_grey_fav.setBackgroundResource(R.drawable.ic_favorite);
-                    mDatabaseHelper.updateFavourite(false, extra_poster_title);
-                    movieFav=false;
-                    Toast.makeText(MovieDetails.this, "Tolto dai preferiti", Toast.LENGTH_SHORT).show();
+
+                    new AlertDialog.Builder(MovieDetails.this)
+                            .setMessage("Rimuovere dai preferiti?")
+                            .setCancelable(true).setNegativeButton("Anulla", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what should happen when negative button is clicked
+
+                        }
+                    })
+                            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(MovieDetails.this, MainActivity.class);
+                                    button_grey_fav.setBackgroundResource(R.drawable.ic_favorite);
+                                    mDatabaseHelper.updateFavourite(false, extra_poster_title);
+                                    movieFav=false;
+                                    Toast.makeText(MovieDetails.this, "Tolto dai preferiti", Toast.LENGTH_SHORT).show();
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }).show();
+
+
 
 
                 }else {
